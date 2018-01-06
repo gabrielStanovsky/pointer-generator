@@ -1,6 +1,6 @@
 #!/bin/sh
 # Usage:
-#   ./predict.sh <data-folder> <model-folder> <exp-name> <max-enc-steps>
+#   ./predict.sh <data-folder> <model-folder> <exp-name> <max-enc-steps> <output-folder>
 set -e
 python run_summarization.py \
     --mode=decode \
@@ -10,4 +10,5 @@ python run_summarization.py \
     --exp_name=$3 \
     --max_enc_steps=$4 \
     --max_dec_steps=400 \
-    --single_pass=1
+    --single_pass=1 \
+    --decode_folder=$5
