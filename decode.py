@@ -22,7 +22,6 @@ import tensorflow as tf
 import beam_search
 import data
 import json
-import pyrouge
 import util
 import logging
 import numpy as np
@@ -56,7 +55,11 @@ class BeamSearchDecoder(object):
     if FLAGS.single_pass:
       # Make a descriptive decode directory name
       ckpt_name = "ckpt-" + ckpt_path.split('-')[-1] # this is something of the form "ckpt-123456"
-      self._decode_dir = os.path.join(FLAGS.log_root, get_decode_dir_name(ckpt_name))
+      self._decode_dir = os.path.join(FLAGS.log_root,
+                                      "{}{}".format(get_decode_dir_name(ckpt_name),
+                                                    "_" + FLAGS.decode_folder \
+                                                    if FLAGS.decode_folder \
+                                                    else ''))
       if os.path.exists(self._decode_dir):
         raise Exception("single_pass decode directory %s should not already exist" % self._decode_dir)
 
@@ -83,9 +86,7 @@ class BeamSearchDecoder(object):
       if batch is None: # finished decoding dataset in single_pass mode
         assert FLAGS.single_pass, "Dataset exhausted, but we are not in single_pass mode"
         tf.logging.info("Decoder has finished reading dataset for single_pass.")
-        tf.logging.info("Output has been saved in %s and %s.",
-                        self._rouge_ref_dir,
-                        self._rouge_dec_dir)
+        tf.logging.info("Output has been saved in %s and %s.", self._rouge_ref_dir, self._rouge_dec_dir)
         return
 
       original_article = batch.original_articles[0]  # string
